@@ -1,0 +1,3 @@
+Ego_pose 因为车辆本身是移动的，世界坐标系会发生变化，因此需要做平移旋转变换保证世界坐标系以当前帧为准
+data_pre	没有ego_pose的数据
+data_pre_v2 ego_pose后的数据
