@@ -10,3 +10,9 @@
 *.log
 *.tlog
 *.vs
+*.txt
+*.png
+*.mp4
+*.avi
+*.jpg
+*.caffemodel

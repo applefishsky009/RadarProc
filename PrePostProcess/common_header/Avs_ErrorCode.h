@@ -22,6 +22,16 @@ if (state) {						\
 	continue;						\
 }
 
+#define AVS_CHECK_RETURN(state, error_code)	\
+if (state) {								\
+	return error_code;						\
+}
+
+#define AVS_CHECK_BREAK(state)	\
+if (state) {					\
+	break;						\
+}
+
 #ifdef __cplusplus
 }
 #endif

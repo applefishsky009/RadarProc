@@ -14,7 +14,7 @@ extern "C" {
 #include "Avs_Radar_Common_lib.h"
 
 #define RADAR_DEBUG_INFO_V2 0
-#define RADAR_DEBUG_INFO_V3	1
+#define RADAR_DEBUG_INFO_V3	0
 
 #define AVS_PROC_SRC_WIDTH	1920
 #define AVS_PROC_SRC_HEIGHT	1080

@@ -224,6 +224,8 @@ void match_temp(AVS_RADAR_FILTER			*avs_filter,
 	float *data = avs_filter->infrared_resize_map.data;
 	for (k = 0; k < outbuf->obj_num; ++k) {		// 针对所有目标查找最高温度
 		obj_info = outbuf->obj_info[k];
+		obj_info->temp = 0.f;
+		obj_info->temp_pixel = 0.f;
 		temp = 0.f;
 		for (j = obj_info->y1; j < obj_info->y2; ++j) {
 			for (i = obj_info->x1; i < obj_info->x2; ++i) {

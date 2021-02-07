@@ -202,6 +202,12 @@ unsigned int AVS_PostProcess(	void						*handle,
 								AVS_RADAR_POSTPROCESS_OUT	*outbuf,
 								int							out_buf_size);
 
+unsigned int AVS_SBProcess(		void						*handle,
+								AVS_RADAR_POSTPROCESS_OUT	*inbuf,
+								int							in_buf_size,
+								AVS_RADAR_POSTPROCESS_OUT	*outbuf,
+								int							out_buf_size);
+
 #ifdef __cplusplus
 }
 #endif

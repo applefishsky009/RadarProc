@@ -6,9 +6,12 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RadarProc", "RadarProc\RadarProc.vcxproj", "{D9F70CE5-7164-4F8A-839B-8EB4EAC4BE82}"
 	ProjectSection(ProjectDependencies) = postProject
 		{C513A83F-380A-45AF-B1D2-FF3DC5CBF8FD} = {C513A83F-380A-45AF-B1D2-FF3DC5CBF8FD}
+		{BC9F1E78-8BFE-43EB-8E71-25DED9BD8126} = {BC9F1E78-8BFE-43EB-8E71-25DED9BD8126}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PrePostProcess", "PrePostProcess\PrePostProcess.vcxproj", "{C513A83F-380A-45AF-B1D2-FF3DC5CBF8FD}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CaffeForward", "CaffeForward\CaffeForward.vcxproj", "{BC9F1E78-8BFE-43EB-8E71-25DED9BD8126}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,6 +37,14 @@ Global
 		{C513A83F-380A-45AF-B1D2-FF3DC5CBF8FD}.Release|x64.Build.0 = Release|x64
 		{C513A83F-380A-45AF-B1D2-FF3DC5CBF8FD}.Release|x86.ActiveCfg = Release|Win32
 		{C513A83F-380A-45AF-B1D2-FF3DC5CBF8FD}.Release|x86.Build.0 = Release|Win32
+		{BC9F1E78-8BFE-43EB-8E71-25DED9BD8126}.Debug|x64.ActiveCfg = Debug|x64
+		{BC9F1E78-8BFE-43EB-8E71-25DED9BD8126}.Debug|x64.Build.0 = Debug|x64
+		{BC9F1E78-8BFE-43EB-8E71-25DED9BD8126}.Debug|x86.ActiveCfg = Debug|Win32
+		{BC9F1E78-8BFE-43EB-8E71-25DED9BD8126}.Debug|x86.Build.0 = Debug|Win32
+		{BC9F1E78-8BFE-43EB-8E71-25DED9BD8126}.Release|x64.ActiveCfg = Release|x64
+		{BC9F1E78-8BFE-43EB-8E71-25DED9BD8126}.Release|x64.Build.0 = Release|x64
+		{BC9F1E78-8BFE-43EB-8E71-25DED9BD8126}.Release|x86.ActiveCfg = Release|Win32
+		{BC9F1E78-8BFE-43EB-8E71-25DED9BD8126}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

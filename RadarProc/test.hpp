@@ -2,6 +2,7 @@
 #include <memory.h>
 #include <iostream>
 #include "Avs_Radar.h"
+#include "Avs_caffe.h"
 #include <opencv2/opencv.hpp>
 using namespace std;
 using namespace cv;
@@ -33,3 +34,5 @@ void verify_radar_interpolationprocess(AVS_RADAR_PREPROCESS_OUT *resize_output);
 
 void verify_radar_postprocess(	cv::Mat					  *image_resize,
 								AVS_RADAR_POSTPROCESS_OUT *post_output);
+
+void show_obj(	AVS_RADAR_POSTPROCESS_OUT *post_output);

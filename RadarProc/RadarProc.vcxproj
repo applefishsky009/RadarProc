@@ -66,10 +66,12 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="OpenCV_Debug_X64.props" />
+    <Import Project="caffe_d_x64_cuda10.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="OpenCV_Release_X64.props" />
+    <Import Project="caffe_r_x64_cuda10.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -80,7 +82,7 @@
     <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>..\PrePostProcess\common_header;$(IncludePath)</IncludePath>
+    <IncludePath>..\PrePostProcess\common_header;..\CaffeForward\common_header;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -98,7 +100,7 @@
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>..\x64\Debug\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>PrePostProcess.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PrePostProcess.lib;CaffeForward.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>NotSet</SubSystem>
     </Link>
   </ItemDefinitionGroup>

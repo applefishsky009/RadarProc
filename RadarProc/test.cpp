@@ -219,7 +219,7 @@ void verify_radar_infrared_interpolationprocess(AVS_RADAR_PREPROCESS_OUT *infrar
 			(unsigned char)resave_img.data[index] = dst_map[index];
 		}
 	}
-	cv::imwrite("../nir_data/verify_nir_resize.png", resave_img);
+	cv::imwrite("../nir_data/verify_nir_resize_1.png", resave_img);
 	resave_img.release();
 	int kkk = 0;
 }
@@ -240,7 +240,7 @@ void verify_radar_interpolationprocess(AVS_RADAR_PREPROCESS_OUT *resize_output) 
 			(unsigned char)resave_img.data[3 * index + 0] = B_map[index]; //b
 		}
 	}
-	cv::imwrite("../nir_data/verify_resize.png", resave_img);
+	cv::imwrite("../nir_data/verify_resize_1.png", resave_img);
 	resave_img.release();
 	int kkk = 0;
 }
@@ -257,9 +257,41 @@ void verify_radar_postprocess(	cv::Mat						*image_resize,
 		pt2.x = post_output->obj_info[i]->x2;
 		pt2.y = post_output->obj_info[i]->y2;
 		int cls = post_output->obj_info[i]->cls;
-		cv::rectangle(*image_resize, pt1, pt2, cv::Scalar(255, 128, 128), 4, 8);
-		//cv::rectangle(*image_resize, pt1, pt2, cv::Scalar(cls * 30, 0, 0), 1, 8);
+		if (cls == AVS_RADAR_OBJ_HUMAN) {
+			cv::rectangle(*image_resize, pt1, pt2, cv::Scalar(255, 0, 0), 4, 8);
+		} else if (cls == AVS_RADAR_OBJ_BIBYCLE){
+			cv::rectangle(*image_resize, pt1, pt2, cv::Scalar(0, 255, 0), 4, 8);
+		} else if (cls == AVS_RADAR_OBJ_BUS) {
+			cv::rectangle(*image_resize, pt1, pt2, cv::Scalar(0, 0, 255), 4, 8);
+		} else if (cls == AVS_RADAR_OBJ_CAR) {
+			cv::rectangle(*image_resize, pt1, pt2, cv::Scalar(255, 0, 255), 4, 8);
+		} else if (cls == AVS_RADAR_OBJ_MOTORCYCLE) {
+			cv::rectangle(*image_resize, pt1, pt2, cv::Scalar(255, 255, 0), 4, 8);
+		} else if (cls == AVS_RADAR_OBJ_TRAILER) {
+			cv::rectangle(*image_resize, pt1, pt2, cv::Scalar(0, 255, 255), 4, 8);
+		} else if (cls == AVS_RADAR_OBJ_TRUCK) {
+			cv::rectangle(*image_resize, pt1, pt2, cv::Scalar(128, 255, 128), 4, 8);
+		}
 	}
-	cv::imwrite("../pre_post_data/verify_resize_final_RT.png", *image_resize);
-	int kkk = 0;
+	//cv::imwrite("jpgs/verify_resize_final_RT.png", *image_resize);
+ 	int kkk = 0;
+}
+
+void show_obj(AVS_RADAR_POSTPROCESS_OUT *post_output) {
+	int i = 0;
+	for (i = 0; i < post_output->obj_num; ++i) {
+		printf("%d \t cor: %d %d %d %d \t cls: %d \t vel: %f \t \
+ dis: %f \t conf:%f \t temp_pixel:%f \t temp:%f \n",
+			i,
+			post_output->obj_info[i]->x1,
+			post_output->obj_info[i]->y1,
+			post_output->obj_info[i]->x2,
+			post_output->obj_info[i]->y2,
+			post_output->obj_info[i]->cls,
+			post_output->obj_info[i]->velocity,
+			post_output->obj_info[i]->distance,
+			post_output->obj_info[i]->confidence,
+			post_output->obj_info[i]->temp_pixel,
+			post_output->obj_info[i]->temp);
+	}
 }

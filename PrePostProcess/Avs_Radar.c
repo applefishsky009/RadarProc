@@ -198,7 +198,8 @@ unsigned int AVS_PreProcess(void						*handle,
 	// 对resize图像进行normalization
 	normalize_input(avs_filter);
 
-	
+	// 关闭雷达数据映射
+/*
 #if RADAR_DEBUG_INFO_V2
 	// 调试信息
 	cal_radarinimage_v2(inbuf, avs_filter);
@@ -213,6 +214,7 @@ unsigned int AVS_PreProcess(void						*handle,
 	// 根据相机内参将点投影到像素平面
 	cal_radarInImage(inbuf, avs_filter);
 #endif
+*/
 
 	// 产生输出信息
 	cal_output_info(inbuf, avs_filter, outbuf);
@@ -248,7 +250,26 @@ unsigned int AVS_PostProcess(	void						*handle,
 	// 为输出信息匹配速度和距离信息
 	match_attribute(avs_filter, outbuf);
 
-	// 为输出信息匹配速度和距离信息
+	// 为输出信息匹配红外信息
+	match_temp(avs_filter, outbuf);
+
+	// 不进行后处理只需要传出内存, 方便调用其他模型
+	//for (i = 0; i < AVS_POST_OUT_MXA_OBJ; ++i) {
+	//	outbuf->obj_info[i] = avs_filter->radar_post_info[i];
+	//}
+	return 0;
+}
+
+// 雷达数据后处理
+unsigned int AVS_SBProcess(		void						*handle,
+								AVS_RADAR_POSTPROCESS_OUT	*inbuf,
+								int							in_buf_size,
+								AVS_RADAR_POSTPROCESS_OUT	*outbuf,
+								int							out_buf_size) {
+	int i = 0, j = 0;
+	AVS_RADAR_FILTER *avs_filter = (AVS_RADAR_FILTER *)handle;
+
+	// 为输出信息匹配红外信息
 	match_temp(avs_filter, outbuf);
 
 	return 0;
