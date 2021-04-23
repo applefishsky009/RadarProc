@@ -381,7 +381,8 @@ int main(int argc, char* argv[]) {
 		cout << "postprocess cost time " << t << "s" << endl;
 		//show_obj(&post_output);
 		verify_radar_postprocess(&image_resize, &post_output);
-		// imshow("video", image_resize);
+		imshow("video", image_resize);
+		cvWaitKey(1);
 		//*/
 		writer << image_resize;
 		int kkk = 0;

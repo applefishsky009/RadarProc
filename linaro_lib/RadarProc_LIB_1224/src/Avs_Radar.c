@@ -24,14 +24,8 @@ unsigned int AVS_GetMemSize(AVS_RADAR_PROCESS_IN	*input,
 	mem_size += pre_input->frame_info.width * pre_input->frame_info.height * sizeof(float) * AVS_RADAR_INPUT_CHANNEL + AVS_MEM_ALIGN_128BYTE;
 	// 畸变矫正后的图像内存 位于filter
 	mem_size += pre_input->frame_info.width * pre_input->frame_info.height * sizeof(float) * AVS_RADAR_INPUT_CHANNEL + AVS_MEM_ALIGN_128BYTE;
-	// 红外图像内存，单通道，位于pre_input
-	mem_size += pre_input->infrared_frame_info.width * pre_input->infrared_frame_info.height * sizeof(float) + AVS_MEM_ALIGN_128BYTE;
-	// 对齐到rgb后的红外图像内存，单通道，位于filter，注意宽高以rgb为准
-	mem_size += pre_input->frame_info.width * pre_input->frame_info.height * sizeof(float) * AVS_INFRARED_CHANNEL + AVS_MEM_ALIGN_128BYTE;
 	// 降采样后的图像内存 位于filter
 	mem_size += AVS_PROC_WIDTH * AVS_PROC_HEIGHT * sizeof(float) * AVS_RADAR_OUTPUT_CHANNEL + AVS_MEM_ALIGN_128BYTE;
-	// 降采样后的红外图像 位于filter
-	mem_size += AVS_PROC_WIDTH * AVS_PROC_HEIGHT * sizeof(float) * AVS_INFRARED_CHANNEL + AVS_MEM_ALIGN_128BYTE;
 
 	// 输入雷达信息内存 位于pre_input
 	mem_size += (sizeof(AVS_RADAR_POINT_INFO) * AVS_MAX_RADAR_NUM + AVS_MEM_ALIGN_128BYTE) * AVS_MAX_RADAR_CACHE;
@@ -77,15 +71,8 @@ unsigned int AVS_CreatMemSize(	AVS_RADAR_PROCESS_IN	*input,
 	pre_input->frame_info.data = (unsigned char *)AVS_COM_alloc_buffer(&mem_buf, pre_input->frame_info.width * pre_input->frame_info.height * sizeof(float) * AVS_RADAR_INPUT_CHANNEL);
 	// 畸变矫正后的图像内存 位于filter
 	filter->undistort_map.data = (unsigned char *)AVS_COM_alloc_buffer(&mem_buf, pre_input->frame_info.width * pre_input->frame_info.height * sizeof(float) * AVS_RADAR_INPUT_CHANNEL);
-	// 红外图像内存 位于 pre_input
-	pre_input->infrared_frame_info.data = (unsigned char *)AVS_COM_alloc_buffer(&mem_buf, pre_input->infrared_frame_info.width * pre_input->infrared_frame_info.height * sizeof(float));
-	// 对齐后的红外图像内存 位于filter 注意宽高以rgb为准
-	filter->infrared_map.data = (unsigned char *)AVS_COM_alloc_buffer(&mem_buf, pre_input->frame_info.width * pre_input->frame_info.height * sizeof(float) * AVS_INFRARED_CHANNEL);
 	// 双线性插值降采样后的图像内存 位于filter
 	filter->resize_map.data = (unsigned char *)AVS_COM_alloc_buffer(&mem_buf, AVS_PROC_WIDTH * AVS_PROC_HEIGHT * sizeof(float) * AVS_RADAR_OUTPUT_CHANNEL);
-	// 红外图像双线性插值降采样后的图像内存 位于filter
-	filter->infrared_resize_map.data = (unsigned char *)AVS_COM_alloc_buffer(&mem_buf, AVS_PROC_WIDTH * AVS_PROC_HEIGHT * sizeof(float) * AVS_INFRARED_CHANNEL);
-
 	// 输入雷达信息内存 位于 pre_input
 	for (i = 0; i < AVS_MAX_RADAR_CACHE; ++i) {
 		pre_input->radar_info[i].radar_point_info = (AVS_RADAR_POINT_INFO *)AVS_COM_alloc_buffer(&mem_buf, sizeof(AVS_RADAR_POINT_INFO) * AVS_MAX_RADAR_NUM);
@@ -114,9 +101,6 @@ unsigned int AVS_CreatMemSize(	AVS_RADAR_PROCESS_IN	*input,
 }
 
 // 畸变矫正
-//
-// handle IN	
-//
 unsigned int AVS_UndistortProcess(	void						*handle,
 									AVS_RADAR_PREPROCESS_IN		*inbuf,
 									int							in_buf_size,
@@ -134,12 +118,7 @@ unsigned int AVS_UndistortProcess(	void						*handle,
 	AVS_CHECK_ERROR(inbuf->frame_info.channel != 3, AVS_LIB_RESOLUTION_UNSUPPORT);
 
 	// 进行畸变校正
-	if (inbuf->image_config.undistort_avalible) {
-		undistort_im_bi(inbuf, avs_filter);
-	} else {
-		memcpy(avs_filter->undistort_map.data, inbuf->frame_info.data, 
-			inbuf->frame_info.width * inbuf->frame_info.height * sizeof(float) * AVS_RADAR_INPUT_CHANNEL);
-	}
+	undistort_im_bi(inbuf, avs_filter);
 	// undistort_im_nearest(inbuf, avs_filter);
 	
 	// 产生输出信息
@@ -149,11 +128,11 @@ unsigned int AVS_UndistortProcess(	void						*handle,
 }
 
 // 插值算法降采样
-unsigned int AVS_InterpolationProcess(	void								*handle,
-										AVS_RADAR_PREPROCESS_IN				*inbuf,
-										int									in_buf_size,
-										AVS_RADAR_INTERPOLATIONPROCESS_OUT	*outbuf,
-										int									out_buf_size) {
+unsigned int AVS_InterpolationProcess(	void						*handle,
+										AVS_RADAR_PREPROCESS_IN		*inbuf,
+										int							in_buf_size,
+										AVS_RADAR_PREPROCESS_OUT	*outbuf,
+										int							out_buf_size) {
 
 	int i = 0, j = 0;
 	AVS_RADAR_FILTER *avs_filter = (AVS_RADAR_FILTER *)handle;
@@ -165,14 +144,7 @@ unsigned int AVS_InterpolationProcess(	void								*handle,
 	AVS_CHECK_ERROR(inbuf->frame_info.height % AVS_PROC_ALIGN != 0, AVS_LIB_RESOLUTION_UNSUPPORT);
 	AVS_CHECK_ERROR(inbuf->frame_info.channel != 3, AVS_LIB_RESOLUTION_UNSUPPORT);
 
-	// 红外图像进行仿射变换
-	if (inbuf->image_config.infrared_align) {
-		warp_perspective(inbuf, avs_filter);
-		// 对红外图像进行双线性插值
-		infrared_bilinear_interpolation_im(inbuf, avs_filter);
-	}
-
-	// 对rgb进行双线性插值
+	// 进行双线性插值
 	bilinear_interpolation_im(inbuf, avs_filter);
 
 	// 产生输出信息
@@ -201,8 +173,7 @@ unsigned int AVS_PreProcess(void						*handle,
 	// 对resize图像进行normalization
 	normalize_input(avs_filter);
 
-	// 关闭雷达数据映射
-/*
+	
 #if RADAR_DEBUG_INFO_V2
 	// 调试信息
 	cal_radarinimage_v2(inbuf, avs_filter);
@@ -217,7 +188,6 @@ unsigned int AVS_PreProcess(void						*handle,
 	// 根据相机内参将点投影到像素平面
 	cal_radarInImage(inbuf, avs_filter);
 #endif
-*/
 
 	// 产生输出信息
 	cal_output_info(inbuf, avs_filter, outbuf);
@@ -252,28 +222,6 @@ unsigned int AVS_PostProcess(	void						*handle,
 
 	// 为输出信息匹配速度和距离信息
 	match_attribute(avs_filter, outbuf);
-
-	// 为输出信息匹配红外信息
-	match_temp(avs_filter, outbuf);
-
-	// 不进行后处理只需要传出内存, 方便调用其他模型
-	//for (i = 0; i < AVS_POST_OUT_MXA_OBJ; ++i) {
-	//	outbuf->obj_info[i] = avs_filter->radar_post_info[i];
-	//}
-	return 0;
-}
-
-// 雷达数据后处理
-unsigned int AVS_SBProcess(		void						*handle,
-								AVS_RADAR_POSTPROCESS_OUT	*inbuf,
-								int							in_buf_size,
-								AVS_RADAR_POSTPROCESS_OUT	*outbuf,
-								int							out_buf_size) {
-	int i = 0, j = 0;
-	AVS_RADAR_FILTER *avs_filter = (AVS_RADAR_FILTER *)handle;
-
-	// 为输出信息匹配红外信息
-	match_temp(avs_filter, outbuf);
 
 	return 0;
 }
